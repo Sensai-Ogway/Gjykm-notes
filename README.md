@@ -1,1 +1,0 @@
-# Gjykm-notes
