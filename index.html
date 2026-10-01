@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; manifest-src 'self'; worker-src 'self'; connect-src 'self'">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tabell">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#14161c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Anteckningar</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f4f7;--card:#fff;--ink:#14161c;--mute:#6b7280;--line:#e4e6ec;--acc:#3b5bfd;--acc2:#e8ecff;--hot:#e4572e;--ok:#1f9d6b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0f14;--card:#161922;--ink:#eef0f5;--mute:#8b93a5;--line:#252a36;--acc:#7c93ff;--acc2:#21263a;--hot:#ff7a50;--ok:#3ed598}}
+:root[data-theme="dark"]{--bg:#0d0f14;--card:#161922;--ink:#eef0f5;--mute:#8b93a5;--line:#252a36;--acc:#7c93ff;--acc2:#21263a;--hot:#ff7a50;--ok:#3ed598}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:clamp(32px,9vw,52px);font-weight:800;letter-spacing:-.03em;margin:0}
+h2{font-size:22px;letter-spacing:-.02em;margin:0 0 8px;padding:10px 10px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:18px}
+.acts{display:flex;gap:6px}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+button{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 13px;cursor:pointer;font-size:14px;font-weight:600}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:16px;width:100%}
+.hero{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.big{grid-column:1/-1;background:var(--ink);color:var(--bg);border-radius:22px;padding:22px}
+.big b{display:block;font-size:clamp(46px,14vw,80px);font-weight:800;letter-spacing:-.04em;line-height:1}
+.big span{opacity:.65;font-size:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.stat b{display:block;font-size:26px;font-weight:800}.stat span{color:var(--mute);font-size:13px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:8px;margin-bottom:16px}
+.tools{display:flex;gap:8px;padding:10px 10px 6px}
+.wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:520px}
+th{font-weight:600;font-size:13px;color:var(--mute);text-align:left;padding:10px;cursor:pointer;white-space:nowrap}
+th.on{color:var(--acc)}
+td{padding:14px 10px;border-top:1px solid var(--line);font-size:15px;vertical-align:middle;overflow-wrap:anywhere}
+tr.r{cursor:pointer}tr.r:hover td{background:var(--acc2)}
+.nm{font-weight:800;font-size:17px}
+.amt{min-width:120px}
+.bar{height:6px;border-radius:6px;background:var(--acc2);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.top1 .bar i{background:var(--hot)}
+.det td{background:var(--bg)}
+.ed{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ed label{font-size:12px;color:var(--mute)}.ed input{margin-top:4px}
+.ed1{display:grid;grid-template-columns:1fr 110px auto;gap:8px;padding:6px 10px}
+.t{display:flex;gap:12px;align-items:center;padding:12px 10px;border-top:1px solid var(--line);cursor:pointer}
+.tx{flex:1}
+.cb{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:transparent}
+.t.done .cb{background:var(--ok);border-color:var(--ok);color:#fff}
+.t.done .tx{text-decoration:line-through;color:var(--mute)}
+.x{padding:4px 10px}
+.prog{height:8px;border-radius:8px;background:var(--acc2);margin:0 10px 8px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.err{color:var(--hot);font-size:14px;margin:8px 10px}
+.empty{padding:22px 10px;color:var(--mute)}
+.foot{color:var(--mute);font-size:13px;text-align:center;line-height:1.5}
+#lock{position:fixed;inset:0;background:var(--bg);display:grid;place-items:center;padding:24px;z-index:9}
+.box{width:100%;max-width:360px;display:grid;gap:10px}
+.sub{color:var(--mute);margin:0 0 6px;line-height:1.4}
+body.hide .sec{filter:blur(9px)}
+</style>
+</head>
+<body>
+<div id="lock"><div class="box">
+<h1>Anteckningar</h1><p class="sub" id="lt"></p>
+<input id="pw" type="password" autocomplete="off" placeholder="Lösenord">
+<input id="pw2" type="password" autocomplete="off" placeholder="Upprepa lösenord" hidden>
+<button class="pri" id="go">Öppna</button><p class="err" id="err"></p>
+</div></div>
+
+<main id="app" hidden>
+<div class="top"><h1>Tabell</h1><div class="acts"><button data-a="hide">Dölj siffror</button><button data-a="lock">Lås</button></div></div>
+<p class="err" id="warn" hidden>Kan inte spara i den här webbläsaren. Allt försvinner när sidan stängs.</p>
+<section class="hero" id="hero"></section>
+<section class="panel">
+<div class="tools"><input id="q" type="search" placeholder="Sök"><button class="pri" data-a="addrow">+ Ny rad</button></div>
+<div class="wrap"><table><thead id="head"></thead><tbody id="body"></tbody></table></div>
+<div class="tools"><button data-a="cols">Kolumner</button><button data-a="imp">Importera</button></div>
+<div id="pan"></div>
+</section>
+<section class="panel"><h2>Att göra</h2><div class="prog"><i id="pg"></i></div><div id="tasks"></div>
+<div class="tools"><input id="nt" placeholder="Ny uppgift"><button data-a="addtask">Lägg till</button></div></section>
+<p class="foot">Krypterat med ditt lösenord och sparat bara på den här enheten.<br>Låser sig själv efter 2 minuter eller när du lämnar sidan.<br><button data-a="wipe" id="wipe">Radera allt</button></p>
+</main>
+
+<script>
+var $=function(i){return document.getElementById(i)},LS="tbl2",S=null,KEY=null,SALT=null,sortK=null,asc=false,openId=null,mode="",arm=null,idle=null,mx={};
+var enc=new TextEncoder(),dec=new TextDecoder();
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var uid=function(){return Math.random().toString(36).slice(2,9)};
+var fmt=function(n){return Math.round(n).toLocaleString("sv-SE")};
+var MON=["jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"];
+function dkey(t){t=String(t).toLowerCase();var m=t.match(/(\d{1,2})\s*[\/.\-]\s*(\d{1,2})(?!\d)/);
+ if(m)return (+m[2])*100+(+m[1]);m=t.match(/(\d{1,2})\s*([a-zå]{3})/);
+ if(m){var i=MON.indexOf(m[2]);if(i>-1)return (i+1)*100+(+m[1])}return 9999}
+function num(v){var t=String(v).toLowerCase().replace(/\s|sek|kr/g,"").replace(",",".");var m=t.match(/^(-?\d+(?:\.\d+)?)(k)?$/);return m?parseFloat(m[1])*(m[2]?1000:1):NaN}
+function b64(u){var s="";u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
+function ub(s){return Uint8Array.from(atob(s),function(c){return c.charCodeAt(0)})}
+async function derive(pw,salt){var m=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt:salt,iterations:310000,hash:"SHA-256"},m,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
+async function save(){if(!KEY)return;var iv=crypto.getRandomValues(new Uint8Array(12));
+ var ct=await crypto.subtle.encrypt({name:"AES-GCM",iv:iv},KEY,enc.encode(JSON.stringify(S)));
+ try{localStorage.setItem(LS,JSON.stringify({s:b64(SALT),i:b64(iv),c:b64(ct)}))}catch(e){$("warn").hidden=false}}
+function fresh(){return{cols:[{id:"c1",name:"Namn",type:"text"},{id:"c2",name:"Belopp",type:"money"},{id:"c3",name:"Datum",type:"date"},{id:"c4",name:"Anteckning",type:"text"}],rows:[],tasks:[]}}
+function migrate(){try{var o=localStorage.getItem("tabell");if(!o)return;var d=JSON.parse(o);
+ S.cols=[["Namn","text"],["Datum","date"],["SEK","money"],["Plats","text"],["Status","text"]].map(function(x){return{id:uid(),name:x[0],type:x[1]}});
+ S.rows=d.map(function(x){var v={};[x.n,x.d,x.s,x.p,x.st].forEach(function(z,i){v[S.cols[i].id]=z});return{id:uid(),v:v}})}catch(e){}
+ try{localStorage.removeItem("tabell")}catch(e){}}
+function ready(){var r=null;try{r=localStorage.getItem(LS)}catch(e){}
+ $("pw2").hidden=!!r;$("lt").textContent=r?"Skriv ditt lösenord.":"Välj ett lösenord, minst 8 tecken. Det går inte att återställa om du glömmer det.";return r}
+async function unlock(){var pw=$("pw").value,raw=ready();$("err").textContent="";
+ if(!raw){if(pw.length<8){$("err").textContent="Minst 8 tecken.";return}
+  if(pw!==$("pw2").value){$("err").textContent="Lösenorden matchar inte.";return}
+  SALT=crypto.getRandomValues(new Uint8Array(16));KEY=await derive(pw,SALT);S=fresh();migrate();await save()}
+ else{var o=JSON.parse(raw);SALT=ub(o.s);var k=await derive(pw,SALT);
+  try{S=JSON.parse(dec.decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:ub(o.i)},k,ub(o.c))));KEY=k}catch(e){$("err").textContent="Fel lösenord.";return}}
+ $("pw").value="";$("pw2").value="";$("lock").hidden=true;$("app").hidden=false;bump();render()}
+function lock(){S=null;KEY=null;openId=null;mode="";["hero","head","body","tasks","pan"].forEach(function(i){$(i).innerHTML=""});
+ $("q").value="";$("app").hidden=true;$("lock").hidden=false;ready()}
+function bump(){clearTimeout(idle);idle=setTimeout(lock,120000)}
+function col(id){return S.cols.filter(function(c){return c.id===id})[0]}
+function srt(a,b){if(!sortK)return 0;var c=col(sortK);if(!c)return 0;var x=a.v[c.id]||"",y=b.v[c.id]||"",r;
+ if(c.type==="money"){x=isNaN(num(x))?-1e15:num(x);y=isNaN(num(y))?-1e15:num(y);r=x-y}
+ else if(c.type==="date")r=dkey(x)-dkey(y);else r=String(x).localeCompare(String(y),"sv");return asc?r:-r}
+function cell(r,c,i){var v=r.v[c.id]==null?"":r.v[c.id];
+ if(c.type==="money"){var n=num(v);if(isNaN(n))return'<td class="amt">'+esc(v)+'</td>';
+  return'<td class="amt"><b class="sec">'+fmt(n)+'</b><div class="bar"><i style="width:'+(mx[c.id]>0?Math.max(0,n/mx[c.id]*100):0)+'%"></i></div></td>'}
+ return'<td'+(i===0?' class="nm"':'')+'>'+esc(v)+'</td>'}
+function render(){if(!S)return;
+ var mc=S.cols.filter(function(c){return c.type==="money"}),left=S.tasks.filter(function(t){return!t.d}).length;
+ mx={};var tot={};mc.forEach(function(c){mx[c.id]=0;tot[c.id]=0;S.rows.forEach(function(r){var n=num(r.v[c.id]);if(!isNaN(n)){tot[c.id]+=n;if(n>mx[c.id])mx[c.id]=n}})});
+ var h="";if(mc[0])h+='<div class="big"><b class="sec">'+fmt(tot[mc[0].id])+'</b><span>'+esc(mc[0].name)+' totalt</span></div>';
+ h+='<div class="stat"><b>'+S.rows.length+'</b><span>rader</span></div><div class="stat"><b>'+left+'</b><span>uppgifter kvar</span></div>';
+ mc.slice(1).forEach(function(c){h+='<div class="stat"><b class="sec">'+fmt(tot[c.id])+'</b><span>'+esc(c.name)+' totalt</span></div>'});
+ $("hero").innerHTML=h;
+ $("head").innerHTML='<tr>'+S.cols.map(function(c){return'<th data-k="'+c.id+'" class="'+(c.id===sortK?"on":"")+'">'+esc(c.name)+(c.id===sortK?(asc?" ↑":" ↓"):"")+'</th>'}).join("")+'</tr>';
+ var q=$("q").value.toLowerCase();
+ var rows=S.rows.filter(function(r){return!q||Object.keys(r.v).some(function(k){return String(r.v[k]).toLowerCase().indexOf(q)>-1})}).sort(srt);
+ h="";rows.forEach(function(r){var top=mc[0]&&num(r.v[mc[0].id])===mx[mc[0].id]&&mx[mc[0].id]>0;
+  h+='<tr class="r'+(top?" top1":"")+'" data-id="'+r.id+'">'+S.cols.map(function(c,i){return cell(r,c,i)}).join("")+'</tr>';
+  if(openId===r.id)h+='<tr class="det"><td colspan="'+S.cols.length+'"><div class="ed">'+S.cols.map(function(c){return'<label>'+esc(c.name)+'<input data-r="'+r.id+'" data-c="'+c.id+'" value="'+esc(r.v[c.id])+'"></label>'}).join("")+
+   '</div><div class="tools" style="padding:10px 0 0"><button data-a="delrow" data-id="'+r.id+'">'+(arm==="r"+r.id?"Tryck igen för att radera":"Radera rad")+'</button></div></td></tr>'});
+ $("body").innerHTML=rows.length?h:'<tr><td colspan="'+S.cols.length+'" class="empty">'+(S.rows.length?"Inga träffar.":"Inga rader än. Tryck + Ny rad eller Importera.")+'</td></tr>';
+ $("tasks").innerHTML=S.tasks.map(function(t){return'<div class="t'+(t.d?" done":"")+'" data-tid="'+t.id+'"><span class="cb">✓</span><span class="tx">'+esc(t.t)+'</span><button class="x" data-a="deltask" data-id="'+t.id+'">×</button></div>'}).join("");
+ $("pg").style.width=(S.tasks.length?(S.tasks.length-left)/S.tasks.length*100:0)+"%";pan()}
+function pan(){var h="";
+ if(mode==="cols"){S.cols.forEach(function(c){h+='<div class="ed1"><input data-cn="'+c.id+'" value="'+esc(c.name)+'"><select data-ct="'+c.id+'">'+
+  [["text","Text"],["money","Belopp"],["date","Datum"]].map(function(o){return'<option value="'+o[0]+'"'+(c.type===o[0]?" selected":"")+'>'+o[1]+'</option>'}).join("")+
+  '</select><button class="x" data-a="delcol" data-id="'+c.id+'">'+(arm==="c"+c.id?"Säker?":"×")+'</button></div>'});
+  h+='<div class="tools"><button data-a="addcol">+ Ny kolumn</button></div>'}
+ if(mode==="imp")h='<div class="tools" style="display:grid"><textarea id="imp" rows="7" placeholder="Klistra in din tabell (med | mellan kolumnerna) och/eller dina uppgifter (rader som börjar med - [ ... ])"></textarea><button class="pri" data-a="doimp">Importera (ersätter nuvarande tabell)</button><span class="sub" id="im"></span></div>';
+ $("pan").innerHTML=h}
+function doImport(txt){var tb=[],tk=[];
+ txt.split("\n").forEach(function(l){var m=l.match(/^\s*-\s*[*=\s]*\[(.+?)\]/);if(m){tk.push(m[1].replace(/[=*]/g,"").trim());return}
+  l=l.replace(/^\s*`+/,"");if(l.indexOf("|")>-1&&!/^[\s|\-:]+$/.test(l)){var c=l.split("|").map(function(x){return x.trim()});if(c[0]==="")c.shift();if(c.length&&c[c.length-1]==="")c.pop();if(c.length)tb.push(c)}});
+ if(tb.length>1){var hd=tb[0];if(tb[1].join("|").toLowerCase()===hd.join("|").toLowerCase())tb.splice(1,1);
+  var cols=hd.map(function(h){var nm=h.replace(/[.:]+$/,"").trim(),ty="text";
+   if(/xx/i.test(nm)){nm="Datum";ty="date"}else if(/^(sek|kr|belopp|summa)$/i.test(nm))ty="money";
+   else if(!nm||/^[^\w\såäöÅÄÖ]+$/.test(nm))nm="Plats";else nm=nm.charAt(0).toUpperCase()+nm.slice(1).toLowerCase();
+   return{id:uid(),name:nm,type:ty}});
+  S.cols=cols;S.rows=tb.slice(1).map(function(r){var v={};cols.forEach(function(c,i){v[c.id]=r[i]||""});return{id:uid(),v:v}})}
+ if(tk.length)S.tasks=tk.map(function(t){return{id:uid(),t:t,d:false}});
+ return(tb.length>1?S.rows.length+" rader":"ingen tabell")+", "+tk.length+" uppgifter importerade."}
+document.addEventListener("click",function(e){if(!S)return;bump();var t=e.target,b=t.closest("[data-a]");
+ if(b){var a=b.getAttribute("data-a"),id=b.getAttribute("data-id");
+  if(a==="lock")return lock();
+  if(a==="hide")document.body.classList.toggle("hide");
+  if(a==="addrow"){var r={id:uid(),v:{}};S.rows.push(r);openId=r.id}
+  if(a==="delrow"){if(arm==="r"+id){S.rows=S.rows.filter(function(r){return r.id!==id});openId=null;arm=null}else arm="r"+id}
+  if(a==="cols")mode=mode==="cols"?"":"cols";
+  if(a==="imp")mode=mode==="imp"?"":"imp";
+  if(a==="addcol")S.cols.push({id:uid(),name:"Ny kolumn",type:"text"});
+  if(a==="delcol"){if(arm==="c"+id){S.cols=S.cols.filter(function(c){return c.id!==id});arm=null}else arm="c"+id}
+  if(a==="addtask"){var v=$("nt").value.trim();if(v){S.tasks.push({id:uid(),t:v,d:false});$("nt").value=""}}
+  if(a==="deltask")S.tasks=S.tasks.filter(function(x){return x.id!==id});
+  if(a==="doimp"){var msg=doImport($("imp").value);mode="imp";render();$("im").textContent=msg;save();return}
+  if(a==="wipe"){if(arm==="w"){try{localStorage.removeItem(LS);localStorage.removeItem("tabell")}catch(x){}arm=null;$("wipe").textContent="Radera allt";return lock()}arm="w";$("wipe").textContent="Tryck igen för att radera allt permanent";return}
+  if(a!=="wipe")save();render();return}
+ var th=t.closest("th[data-k]");if(th){var k=th.getAttribute("data-k");if(k===sortK)asc=!asc;else{sortK=k;asc=false}render();return}
+ var tr=t.closest("tr.r");if(tr){var i=tr.getAttribute("data-id");openId=openId===i?null:i;arm=null;render();return}
+ var tk=t.closest(".t");if(tk){var x=S.tasks.filter(function(z){return z.id===tk.getAttribute("data-tid")})[0];if(x){x.d=!x.d;save();render()}}});
+document.addEventListener("change",function(e){if(!S)return;var t=e.target,r;
+ if(t.hasAttribute("data-r")){r=S.rows.filter(function(z){return z.id===t.getAttribute("data-r")})[0];if(r)r.v[t.getAttribute("data-c")]=t.value}
+ else if(t.hasAttribute("data-cn"))col(t.getAttribute("data-cn")).name=t.value||"Kolumn";
+ else if(t.hasAttribute("data-ct"))col(t.getAttribute("data-ct")).type=t.value;else return;
+ save();render()});
+$("q").addEventListener("input",function(){if(S)render()});
+$("go").onclick=unlock;
+["pw","pw2"].forEach(function(i){$(i).addEventListener("keydown",function(e){if(e.key==="Enter")unlock()})});
+document.addEventListener("visibilitychange",function(){if(document.hidden&&S)lock()});
+ready();
+try{if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js')}catch(e){}
+</script>
+</body>
+</html>
